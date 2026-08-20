@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Gauge, Map, Truck, Zap, ChevronRight, MoreHorizontal } from 'lucide-react'
 import { MetricCard } from '../components/MetricCard'
 
@@ -23,7 +24,7 @@ export default function Dashboard() {
 
       <div className="dashboard-grid">
         <section className="panel map-panel">
-          <div className="panel-header"><div><h2>Live operations</h2><p>Real-time vehicle activity across Metro City</p></div><button className="outline-button"><Map size={15} />Open full map</button></div>
+          <div className="panel-header"><div><h2>Live operations</h2><p>Real-time vehicle activity across Metro City</p></div><Link href="/map" className="outline-button"><Map size={15} />Open full map</Link></div>
           <div className="map-stage">
             <div className="map-overlay map-title"><span className="live-pulse" />Live tracking <span className="map-time">Updated just now</span></div>
             <div className="map-roads road-one" /><div className="map-roads road-two" /><div className="map-roads road-three" /><div className="map-roads road-four" /><div className="map-water" />

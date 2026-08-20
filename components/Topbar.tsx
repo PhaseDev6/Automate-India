@@ -6,6 +6,7 @@ import { Bell, ChevronRight, Leaf, Moon, X } from 'lucide-react'
 
 const breadcrumbs: Record<string, string> = {
   '/': 'Overview',
+  '/map': 'Live Map',
   '/vehicles': 'Vehicles',
   '/routes': 'Routes & zones',
   '/reports': 'Reports',
