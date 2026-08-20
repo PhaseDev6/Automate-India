@@ -33,5 +33,10 @@
     "overrides": {
       "hono": "4.12.25"
     }
+  },
+  "eslintConfig": {
+    "rules": {
+      "react/prop-types": "0"
+    }
   }
 }
