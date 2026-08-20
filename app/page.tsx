@@ -8,6 +8,9 @@ function MapMarker({ label, x, y, muted = false }: { label: string; x: string; y
   return <div className={`map-marker ${muted ? 'marker-muted' : ''}`} style={{ left: x, top: y }}><span className="marker-pin"><Truck size={13} /></span><span>{label}</span></div>
 }
 
+import dynamic from 'next/dynamic'
+const MapComponent = dynamic(() => import('../components/InteractiveMap'), { ssr: false })
+
 export default function Dashboard() {
   return (
     <>
@@ -24,14 +27,9 @@ export default function Dashboard() {
 
       <div className="dashboard-grid">
         <section className="panel map-panel">
-          <div className="panel-header"><div><h2>Live operations</h2><p>Real-time vehicle activity across Metro City</p></div><Link href="/map" className="outline-button"><Map size={15} />Open full map</Link></div>
-          <div className="map-stage">
-            <div className="map-overlay map-title"><span className="live-pulse" />Live tracking <span className="map-time">Updated just now</span></div>
-            <div className="map-roads road-one" /><div className="map-roads road-two" /><div className="map-roads road-three" /><div className="map-roads road-four" /><div className="map-water" />
-            <span className="map-district district-one">NORTH LOOP</span><span className="map-district district-two">DOWNTOWN</span><span className="map-district district-three">RIVER DISTRICT</span>
-            <MapMarker label="TRK-042" x="31%" y="32%" /><MapMarker label="TRK-018" x="67%" y="43%" /><MapMarker label="TRK-006" x="76%" y="72%" /><MapMarker label="TRK-031" x="47%" y="67%" muted />
-          </div>
-          <div className="map-footer"><div><span className="legend-dot green-fill" />On route <strong>14</strong></div><div><span className="legend-dot gray-fill" />At depot <strong>3</strong></div><div><span className="legend-dot amber-fill" />Maintenance <strong>1</strong></div><span className="map-total">24 total vehicles <ChevronRight size={14} /></span></div>
+          <div className="panel-header"><div><h2>Live operations</h2><p>Alpha 1 C Market, Greater Noida</p></div><button className="outline-button"><Map size={15} />Open full map</button></div>
+          <MapComponent />
+          <div className="map-footer" style={{ marginTop: '1rem' }}><div><span className="legend-dot green-fill" />On route <strong>14</strong></div><div><span className="legend-dot gray-fill" />At depot <strong>3</strong></div><div><span className="legend-dot amber-fill" />Maintenance <strong>1</strong></div><span className="map-total">24 total vehicles <ChevronRight size={14} /></span></div>
         </section>
 
         <section className="panel activity-panel">
