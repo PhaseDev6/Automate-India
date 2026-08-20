@@ -48,10 +48,7 @@ export function Topbar() {
             </div>
           )}
         </div>
-        <div className="top-avatar" style={{ cursor: 'pointer' }} onClick={() => {
-          document.cookie = "auth_token=; path=/; max-age=0"
-          window.location.href = '/login'
-        }} title="Click to logout">AL</div>
+        <div className="top-avatar">AL</div>
       </div>
     </header>
   )
