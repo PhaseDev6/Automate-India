@@ -18,7 +18,20 @@ const createIcon = (color: string) => {
   })
 }
 
-const truckIcon = createIcon('blue')
+// Custom modern SVG icon for Vehicles
+const createTruckIcon = () => {
+  return L.divIcon({
+    className: 'custom-truck-icon',
+    html: `<div style="background: #10b981; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); border: 2px solid #ffffff;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><path d="M14 17h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+    </div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+  })
+}
+
+const truckIcon = createTruckIcon()
 const binFullIcon = createIcon('red')
 const binWarningIcon = createIcon('orange')
 const binEmptyIcon = createIcon('green')
