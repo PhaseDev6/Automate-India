@@ -33,7 +33,7 @@ export function Topbar() {
 
   return (
     <header className="topbar">
-      <div className="mobile-brand"><div className="brand-mark"><Leaf size={16} /></div><span>verdant<span className="brand-dot">.</span></span></div>
+      <div className="mobile-brand"><div className="brand-mark"><Leaf size={16} /></div><span>UrbanSweep<span className="brand-dot">.</span></span></div>
       <div className="breadcrumb"><span>Operations</span><ChevronRight size={14} /><strong>{activeNav}</strong></div>
       <div className="top-actions">
         <button className="icon-button" aria-label="Toggle theme" onClick={toggleTheme}><Moon size={17} /></button>

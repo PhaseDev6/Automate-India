@@ -5,7 +5,7 @@ import './globals.css'
 import { LayoutShell } from '../components/LayoutShell'
 
 export const metadata: Metadata = {
-  title: 'Verdant — Municipal Operations',
+  title: 'UrbanSweep — Municipal Operations',
   description: 'Real-time fleet and route operations for Metro City.',
   generator: 'v0.app',
   icons: {

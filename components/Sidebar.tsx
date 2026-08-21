@@ -29,7 +29,7 @@ export function Sidebar() {
   
   return (
     <aside className="sidebar">
-      <div className="brand"><div className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></div><span>verdant<span className="brand-dot">.</span></span></div>
+      <div className="brand"><div className="brand-mark"><Leaf size={18} strokeWidth={2.5} /></div><span>UrbanSweep<span className="brand-dot">.</span></span></div>
       <div className="workspace-switcher"><div className="workspace-avatar">MC</div><div><span className="eyebrow">Workspace</span><strong>Metro City</strong></div><ChevronDown size={15} /></div>
       <nav className="nav-list" aria-label="Primary navigation">
         <span className="nav-label">Operations</span>
