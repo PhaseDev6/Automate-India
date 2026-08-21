@@ -1,9 +1,9 @@
 export const vehicles = [
-  { id: 'TRK-042', type: 'Compactor', route: 'Alpha 1 - Block A', status: 'On route', fuel: '78%', driver: 'Priya Sharma', updated: '2 min ago', lat: 28.4735, lng: 77.5015 },
-  { id: 'TRK-018', type: 'Roll-off', route: 'Commercial Belt', status: 'On route', fuel: '64%', driver: 'Rahul Kumar', updated: '5 min ago', lat: 28.4715, lng: 77.5040 },
-  { id: 'TRK-031', type: 'Rear loader', route: 'C Market', status: 'At depot', fuel: '92%', driver: 'Amit Patel', updated: '8 min ago', lat: 28.4728, lng: 77.5028 },
-  { id: 'TRK-027', type: 'Compactor', route: 'Golf Course Area', status: 'Maintenance', fuel: '31%', driver: '—', updated: '18 min ago', lat: 28.4680, lng: 77.5100 },
-  { id: 'TRK-006', type: 'Sweeper', route: 'Knowledge Park', status: 'On route', fuel: '55%', driver: 'Vikram Singh', updated: '22 min ago', lat: 28.4800, lng: 77.4950 },
+  { id: 'TRK-042', type: 'Compactor', route: 'Alpha 1 - Block A', status: 'On route', fuel: '78%', driver: 'Maya Chen', updated: '2 min ago', lat: 28.4735, lng: 77.5015, startLat: 28.4710, startLng: 77.4980 },
+  { id: 'TRK-018', type: 'Roll-off', route: 'Commercial Belt', status: 'On route', fuel: '64%', driver: 'Jordan Smith', updated: '5 min ago', lat: 28.4715, lng: 77.5040, startLat: 28.4690, startLng: 77.5010 },
+  { id: 'TRK-031', type: 'Rear loader', route: 'C Market', status: 'At depot', fuel: '92%', driver: 'Avery Johnson', updated: '8 min ago', lat: 28.4728, lng: 77.5028, startLat: 28.4705, startLng: 77.5005 },
+  { id: 'TRK-027', type: 'Compactor', route: 'Golf Course Area', status: 'Maintenance', fuel: '31%', driver: '—', updated: '18 min ago', lat: 28.4680, lng: 77.5100, startLat: 28.4650, startLng: 77.5070 },
+  { id: 'TRK-006', type: 'Sweeper', route: 'Knowledge Park', status: 'On route', fuel: '55%', driver: 'Noah Williams', updated: '22 min ago', lat: 28.4800, lng: 77.4950, startLat: 28.4780, startLng: 77.4910 },
 ]
 
 export const wasteBins = [

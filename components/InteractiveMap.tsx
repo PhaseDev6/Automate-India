@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { vehicles, wasteBins } from '../lib/mockData'
 import L from 'leaflet'
@@ -56,10 +56,58 @@ const createBinIcon = (fillLevel: number) => {
 
 export default function InteractiveMap() {
   const [mounted, setMounted] = useState(false)
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null)
+  const [pastRoute, setPastRoute] = useState<[number, number][]>([])
+  const [futureRoute, setFutureRoute] = useState<[number, number][]>([])
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (!selectedVehicleId) {
+      setPastRoute([])
+      setFutureRoute([])
+      return
+    }
+
+    const vehicle = vehicles.find(v => v.id === selectedVehicleId)
+    if (!vehicle) return
+
+    // Find the highest priority bin (hotspot)
+    const targetBin = [...wasteBins].sort((a, b) => b.fillLevel - a.fillLevel)[0]
+
+    // Fetch past route (Depot to Current)
+    const fetchPastRoute = async () => {
+      try {
+        const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${vehicle.startLng},${vehicle.startLat};${vehicle.lng},${vehicle.lat}?overview=full&geometries=geojson`)
+        const data = await res.json()
+        if (data.routes && data.routes[0]) {
+          const coords = data.routes[0].geometry.coordinates.map((c: any) => [c[1], c[0]])
+          setPastRoute(coords)
+        }
+      } catch (e) {
+        console.error("Error fetching past route:", e)
+      }
+    }
+
+    // Fetch future route (Current to Bin)
+    const fetchFutureRoute = async () => {
+      try {
+        const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${vehicle.lng},${vehicle.lat};${targetBin.lng},${targetBin.lat}?overview=full&geometries=geojson`)
+        const data = await res.json()
+        if (data.routes && data.routes[0]) {
+          const coords = data.routes[0].geometry.coordinates.map((c: any) => [c[1], c[0]])
+          setFutureRoute(coords)
+        }
+      } catch (e) {
+        console.error("Error fetching future route:", e)
+      }
+    }
+
+    fetchPastRoute()
+    fetchFutureRoute()
+  }, [selectedVehicleId])
 
   if (!mounted) return <div style={{ height: '400px', width: '100%', background: '#1e293b', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</div>
 
@@ -75,8 +123,20 @@ export default function InteractiveMap() {
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
         
+        {pastRoute.length > 0 && <Polyline positions={pastRoute} color="#64748b" weight={4} dashArray="5, 10" />}
+        {futureRoute.length > 0 && <Polyline positions={futureRoute} color="#10b981" weight={5} />}
+
         {vehicles.map((v) => (
-          <Marker key={v.id} position={[v.lat, v.lng]} icon={truckIcon}>
+          <Marker 
+            key={v.id} 
+            position={[v.lat, v.lng]} 
+            icon={truckIcon}
+            eventHandlers={{
+              click: () => {
+                setSelectedVehicleId(v.id)
+              }
+            }}
+          >
             <Popup>
               <strong>{v.id}</strong> ({v.type})<br/>
               Status: {v.status}<br/>
