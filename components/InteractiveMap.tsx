@@ -51,7 +51,7 @@ const createBinIcon = (fillLevel: number) => {
   })
 }
 
-export default function InteractiveMap() {
+export default function InteractiveMap({ height = '400px' }: { height?: string }) {
   const [mounted, setMounted] = useState(false)
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null)
   
@@ -125,13 +125,13 @@ export default function InteractiveMap() {
     return () => clearInterval(interval);
   }, [selectedVehicleId])
 
-  if (!mounted) return <div style={{ height: '400px', width: '100%', background: '#1e293b', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</div>
+  if (!mounted) return <div style={{ height, width: '100%', background: '#1e293b', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</div>
 
   // Center on Alpha 1 C Market, Greater Noida
   const center: [number, number] = [28.4728, 77.5028]
 
   return (
-    <div style={{ height: '400px', width: '100%', borderRadius: '12px', overflow: 'hidden' }}>
+    <div style={{ height, width: '100%', borderRadius: '12px', overflow: 'hidden' }}>
       <MapContainer center={center} zoom={15} style={{ height: '100%', width: '100%', zIndex: 0 }}>
         {/* Dark theme tiles */}
         <TileLayer
