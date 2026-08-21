@@ -32,9 +32,27 @@ const createTruckIcon = () => {
 }
 
 const truckIcon = createTruckIcon()
-const binFullIcon = createIcon('red')
-const binWarningIcon = createIcon('orange')
-const binEmptyIcon = createIcon('green')
+// Custom dynamic SVG icon for Waste Bins (Intensity based)
+const createBinIcon = (fillLevel: number) => {
+  // Calculate intensity (0.0 to 1.0)
+  const intensity = fillLevel / 100;
+  
+  // The red circle border and glow scales with intensity
+  const borderWidth = Math.max(1, intensity * 4); // 1px to 4px
+  const shadowSpread = Math.max(5, intensity * 25); // 5px to 25px glow
+  const borderColor = `rgba(239, 68, 68, ${Math.max(0.4, intensity)})`;
+  const iconColor = fillLevel >= 80 ? '#ef4444' : '#94a3b8'; // Red if high, else gray
+
+  return L.divIcon({
+    className: 'custom-bin-icon',
+    html: `<div style="background: #0f172a; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: ${borderWidth}px solid ${borderColor}; box-shadow: 0 0 ${shadowSpread}px rgba(239, 68, 68, ${intensity}); z-index: ${fillLevel};">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+    </div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+  })
+}
 
 export default function InteractiveMap() {
   const [mounted, setMounted] = useState(false)
@@ -69,15 +87,11 @@ export default function InteractiveMap() {
         ))}
 
         {wasteBins.map((bin) => {
-          let icon = binEmptyIcon
-          if (bin.fillLevel >= 90) icon = binFullIcon
-          else if (bin.fillLevel >= 70) icon = binWarningIcon
-
           return (
-            <Marker key={bin.id} position={[bin.lat, bin.lng]} icon={icon}>
+            <Marker key={bin.id} position={[bin.lat, bin.lng]} icon={createBinIcon(bin.fillLevel)}>
               <Popup>
                 <strong>{bin.id}</strong><br/>
-                Fill Level: {bin.fillLevel}%<br/>
+                Intensity/Fill: {bin.fillLevel}%<br/>
                 Status: {bin.status}
               </Popup>
             </Marker>
