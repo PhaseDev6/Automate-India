@@ -14,6 +14,7 @@ import {
   Settings,
   Truck,
   UserRound,
+  Terminal,
 } from 'lucide-react'
 
 const navItems = [
@@ -22,6 +23,7 @@ const navItems = [
   { label: 'Vehicles', href: '/vehicles', icon: Truck },
   { label: 'Routes & zones', href: '/routes', icon: Leaf },
   { label: 'Reports', href: '/reports', icon: FileText },
+  { label: 'AI Debugger', href: '/debug', icon: Terminal },
 ]
 
 export function Sidebar() {
