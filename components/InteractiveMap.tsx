@@ -102,8 +102,8 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
       setLiveVehicles(prev => prev.map(v => {
         // If this is the active routed vehicle
         if (v.id === selectedVehicleId && futureRouteRef.current.length > 0) {
-          // Jump ahead 3-8 points to simulate a GPS location ping jump
-          const jumpAmount = Math.min(Math.floor(Math.random() * 5) + 3, futureRouteRef.current.length);
+          // Jump ahead 1-2 points to simulate a slower, realistic GPS location ping
+          const jumpAmount = Math.min(Math.floor(Math.random() * 2) + 1, futureRouteRef.current.length);
           const newPos = futureRouteRef.current[jumpAmount - 1];
           
           // Shrink the route line as we consume points
