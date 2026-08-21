@@ -44,7 +44,7 @@ export function Sidebar() {
         <button className="nav-item"><UserRound size={17} /><span>Team</span></button>
         <button className="nav-item"><Settings size={17} /><span>Settings</span></button>
       </nav>
-      <div className="sidebar-bottom"><div className="help-card"><CircleHelp size={17} /><div><strong>Need a hand?</strong><span>Open help center</span></div><ChevronRight size={15} /></div><div className="user-card"><div className="user-avatar">AL</div><div><strong>Alex Lee</strong><span>Administrator</span></div><MoreHorizontal size={17} /></div></div>
+      <div className="sidebar-bottom"><div className="help-card"><CircleHelp size={17} /><div><strong>Need a hand?</strong><span>Open help center</span></div><ChevronRight size={15} /></div><div className="user-card"><div className="user-avatar">RS</div><div><strong>Rohan Sharma</strong><span>Administrator</span></div><MoreHorizontal size={17} /></div></div>
     </aside>
   )
 }

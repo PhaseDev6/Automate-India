@@ -15,7 +15,7 @@ export default function Dashboard() {
   return (
     <>
       <div className="page-heading">
-        <div><p className="eyebrow accent-eyebrow">Thursday, June 12, 2025</p><h1>Good morning, Alex</h1><p className="subheading">Here&apos;s what&apos;s happening across your operations today.</p></div>
+        <div><p className="eyebrow accent-eyebrow">Thursday, June 12, 2025</p><h1>Good morning, Rohan</h1><p className="subheading">Here&apos;s what&apos;s happening across your operations today.</p></div>
       </div>
 
       <div className="metric-grid">

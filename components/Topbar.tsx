@@ -49,7 +49,7 @@ export function Topbar() {
             </div>
           )}
         </div>
-        <div className="top-avatar">AL</div>
+        <div className="top-avatar">RS</div>
       </div>
     </header>
   )
