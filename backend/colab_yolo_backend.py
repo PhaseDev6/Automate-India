@@ -106,6 +106,9 @@ print(f"🚀 YOUR PUBLIC API URL IS: {public_url}")
 print(f"👉 PASTE THIS URL INTO YOUR NEXT.JS DEBUG DASHBOARD")
 print("="*50 + "\n")
 
-# 4. Start the server (using nest_asyncio to allow running inside Colab's Jupyter loop)
+# 4. Start the server (using the async Server object to prevent Colab event loop errors)
+import asyncio
 nest_asyncio.apply()
-uvicorn.run(app, host="0.0.0.0", port=8000)
+config = uvicorn.Config(app, host="0.0.0.0", port=8000)
+server = uvicorn.Server(config)
+await server.serve()
