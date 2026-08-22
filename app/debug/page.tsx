@@ -67,8 +67,8 @@ export default function DebugPage() {
         // Sync with the Live Map via localStorage
         localStorage.setItem('recentDetections', JSON.stringify(newResults))
         
-        // Artificial delay so judges can see the stream processing
-        await new Promise(r => setTimeout(r, 1500))
+        // Artificial delay reduced for faster processing
+        await new Promise(r => setTimeout(r, 100))
         
       } catch (err: any) {
         console.error("Failed on file:", file.name, err)

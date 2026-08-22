@@ -117,7 +117,16 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
       const payload = {
         depot: { lat: depots[0].lat, lng: depots[0].lng },
         vehicles: liveVehicles.map(v => ({ id: v.id, lat: v.lat, lng: v.lng, capacity: 100 })),
-        hotspots: wasteBins.filter(b => b.fillLevel > 50).map(b => ({ id: b.id, lat: b.lat, lng: b.lng, demand: b.fillLevel }))
+        hotspots: [
+          ...wasteBins.filter(b => b.fillLevel > 50).map(b => ({ id: b.id, lat: b.lat, lng: b.lng, demand: b.fillLevel })),
+          // Include AI detections that are severe enough to require dispatch
+          ...liveDetections.filter(d => d.dispatch_required || d.severity_score > 60).map(d => ({ 
+            id: d.id, 
+            lat: d.lat, 
+            lng: d.lng, 
+            demand: Math.floor(d.severity_score) // Use severity as a routing demand weight
+          }))
+        ]
       }
 
       // Check for external engine in settings, default to internal Next.js API
