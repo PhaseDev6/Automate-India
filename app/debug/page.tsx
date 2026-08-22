@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react'
 
 export default function DebugPage() {
-  const [ngrokUrl, setNgrokUrl] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -31,10 +30,6 @@ export default function DebugPage() {
   }
 
   const runInference = async () => {
-    if (!ngrokUrl) {
-      setError("Please enter your Ngrok backend URL first.")
-      return
-    }
     if (!imageFile) {
       setError("Please upload an image to analyze.")
       return
@@ -42,28 +37,26 @@ export default function DebugPage() {
 
     setLoading(true)
     setError(null)
-
-    // Format URL correctly (remove trailing slash)
-    const formattedUrl = ngrokUrl.trim().replace(/\/$/, '')
     
     try {
       const formData = new FormData()
       formData.append('file', imageFile)
 
-      const response = await fetch(`${formattedUrl}/analyze-image`, {
+      const response = await fetch(`/api/analyze-trash`, {
         method: 'POST',
         body: formData,
       })
 
       if (!response.ok) {
-        throw new Error(`Server returned ${response.status}: ${response.statusText}`)
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(`Server returned ${response.status}: ${errorData.error || response.statusText}`)
       }
 
       const data = await response.json()
       setResult(data)
     } catch (err: any) {
       console.error(err)
-      setError(`Connection failed. Ensure Colab is running and ngrok URL is correct. Details: ${err.message}`)
+      setError(`Analysis failed. Details: ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -73,39 +66,11 @@ export default function DebugPage() {
     <div className="p-8 max-w-7xl mx-auto text-white">
       <div className="mb-8 border-b border-slate-700 pb-4">
         <h1 className="text-3xl font-bold mb-2 flex items-center">
-          <span className="text-emerald-400 mr-3">⚡</span> 
+          <span className="text-emerald-400 mr-3">✨</span> 
           UrbanSweep AI Vision Debugger
         </h1>
         <p className="text-slate-400">
-          Raw inference view. Connects directly to the Google Colab T4 GPU backend running YOLOv8.
-        </p>
-      </div>
-
-      {/* Connection Setup */}
-      <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 mb-8">
-        <label className="block text-sm font-medium text-slate-300 mb-2">
-          Colab Ngrok API URL
-        </label>
-        <div className="flex gap-4">
-          <input 
-            type="text" 
-            placeholder="https://1234-abcd.ngrok-free.app"
-            className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 focus:outline-none focus:border-emerald-500 font-mono text-sm"
-            value={ngrokUrl}
-            onChange={(e) => setNgrokUrl(e.target.value)}
-          />
-          <button 
-            className="bg-slate-700 hover:bg-slate-600 px-6 py-2 rounded-lg font-medium transition-colors"
-            onClick={() => {
-              // Quick test connection
-              if(ngrokUrl) window.open(ngrokUrl, '_blank')
-            }}
-          >
-            Test Link
-          </button>
-        </div>
-        <p className="text-xs text-slate-500 mt-2">
-          Make sure you have clicked "Visit Site" on the ngrok warning page at least once before running API calls.
+          Raw inference view. Connects directly to Google's Gemini 1.5 Flash Vision Model.
         </p>
       </div>
 
@@ -142,17 +107,17 @@ export default function DebugPage() {
               disabled={loading || !imageFile}
               className={`mt-6 w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center gap-2 transition-all ${
                 loading ? 'bg-emerald-600/50 cursor-not-allowed' : 
-                (!imageFile || !ngrokUrl) ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 
+                (!imageFile) ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 
                 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]'
               }`}
             >
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Processing YOLOv8 Inference...
+                  Processing Gemini Inference...
                 </>
               ) : (
-                'Run YOLOv8 Vision Analysis'
+                'Run Gemini Vision Analysis'
               )}
             </button>
             
@@ -180,8 +145,8 @@ export default function DebugPage() {
               <div className="h-full flex flex-col items-center justify-center text-slate-600">
                 <p>Waiting for inference data...</p>
                 <div className="mt-4 grid grid-cols-2 gap-4 text-xs opacity-50">
-                  <div>Model: YOLOv8n</div>
-                  <div>Provider: Google Colab T4</div>
+                  <div>Model: Gemini 1.5 Flash</div>
+                  <div>Provider: Google AI Studio</div>
                   <div>Format: JSON</div>
                   <div>Latency: -- ms</div>
                 </div>
@@ -190,18 +155,20 @@ export default function DebugPage() {
           </div>
           
           {result && (
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              <div className="bg-slate-800 p-3 rounded text-center">
-                <div className="text-xs text-slate-400">Total Items</div>
-                <div className="text-2xl font-bold">{result.total_items_detected}</div>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-slate-800 p-4 rounded-xl text-center">
+                <div className="text-sm text-slate-400 mb-1">Severity Score</div>
+                <div className="text-3xl font-bold text-red-400">{result.severity_score}%</div>
               </div>
-              <div className="bg-slate-800 p-3 rounded text-center">
-                <div className="text-xs text-slate-400">Severity</div>
-                <div className="text-2xl font-bold text-red-400">{result.calculated_severity}%</div>
+              <div className="bg-slate-800 p-4 rounded-xl text-center flex flex-col justify-center">
+                <div className="text-sm text-slate-400 mb-1">Dispatch Required</div>
+                <div className={`text-lg font-bold mt-1 px-4 py-2 rounded ${result.dispatch_required ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                  {result.dispatch_required ? 'YES - DISPATCH NOW' : 'NO - MONITOR'}
+                </div>
               </div>
-              <div className="bg-slate-800 p-3 rounded text-center">
-                <div className="text-xs text-slate-400">Status</div>
-                <div className="text-sm font-bold mt-1 text-emerald-400">{result.recommendation}</div>
+              <div className="bg-slate-800 p-4 rounded-xl text-left md:col-span-2">
+                <div className="text-sm text-slate-400 mb-2">Analysis Summary</div>
+                <div className="text-md text-white">{result.analysis_summary}</div>
               </div>
             </div>
           )}
