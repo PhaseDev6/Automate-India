@@ -21,7 +21,7 @@ const navItems = [
   { label: 'Overview', href: '/', icon: LayoutDashboard },
   { label: 'Live Map', href: '/map', icon: Map },
   { label: 'Vehicles', href: '/vehicles', icon: Truck },
-  { label: 'Reports', href: '/reports', icon: FileText },
+  { label: 'Team', href: '/team', icon: UserRound },
 ]
 
 export function Sidebar() {

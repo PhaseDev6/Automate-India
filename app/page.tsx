@@ -19,10 +19,10 @@ export default function Dashboard() {
       </div>
 
       <div className="metric-grid">
-        <MetricCard label="Active vehicles" value="18" change="+3.2%" context="vs. last week" icon={<Truck size={18} />} />
-        <MetricCard label="Routes completed" value="64" change="+8.4%" context="vs. last week" icon={<Map size={18} />} />
-        <MetricCard label="Collection volume" value="82.4" unit="t" change="+5.1%" context="vs. last week" icon={<Gauge size={18} />} />
-        <MetricCard label="Fuel efficiency" value="94.8" unit="%" change="+1.8%" context="vs. last week" icon={<Zap size={18} />} />
+        <MetricCard label="Active vehicles" value="18" icon={<Truck size={18} />} />
+        <MetricCard label="Routes completed" value="64" icon={<Map size={18} />} />
+        <MetricCard label="Collection volume" value="82.4" unit="t" icon={<Gauge size={18} />} />
+        <MetricCard label="Fuel efficiency" value="94.8" unit="%" icon={<Zap size={18} />} />
       </div>
 
       <div className="dashboard-grid">

@@ -9,8 +9,7 @@ const breadcrumbs: Record<string, string> = {
   '/': 'Overview',
   '/map': 'Live Map',
   '/vehicles': 'Vehicles',
-  '/routes': 'Routes & zones',
-  '/reports': 'Reports',
+  '/team': 'Team Directory',
 }
 
 export function Topbar() {
