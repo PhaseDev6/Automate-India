@@ -66,22 +66,47 @@ const truckIcon = createTruckIcon()
 const sweeperIcon = createSweeperIcon()
 const depotIcon = createDepotIcon()
 
+// Helper function to move smoothly towards a target coordinate
+function moveTowards(currentLat: number, currentLng: number, targetLat: number, targetLng: number, speed: number) {
+  const dx = targetLat - currentLat;
+  const dy = targetLng - currentLng;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  
+  if (dist <= speed) {
+    return { lat: targetLat, lng: targetLng, arrived: true };
+  }
+  
+  const ratio = speed / dist;
+  return { 
+    lat: currentLat + dx * ratio, 
+    lng: currentLng + dy * ratio, 
+    arrived: false 
+  };
+}
+
 export default function InteractiveMap({ height = '400px' }: { height?: string }) {
   const [mounted, setMounted] = useState(false)
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null)
   
-  // Live states for GPS simulation
+  // Live states
   const [liveVehicles, setLiveVehicles] = useState(initialVehicles)
   const [liveSweepers, setLiveSweepers] = useState(initialSweepers)
-  const [triggerRender, setTriggerRender] = useState(0) // Used to force re-render for path drawing
+  const [triggerRender, setTriggerRender] = useState(0) 
   
-  // Store all routes globally so everyone can move
-  const allRoutesRef = useRef<{ [key: string]: [number, number][] }>({})
+  // Advanced Simulation State
+  const agentStateRef = useRef<{ 
+    [key: string]: { 
+      route: [number, number][]; 
+      targetIndex: number; 
+      direction: number; 
+      idleTicks: number; 
+    } 
+  }>({})
 
   useEffect(() => {
     setMounted(true)
     
-    // Fetch routes for all vehicles and sweepers that are active
+    // Fetch and initialize routes
     const fetchAllRoutes = async () => {
       const activeAgents = [
         ...initialVehicles.filter(v => v.targetLat !== v.lat),
@@ -90,13 +115,17 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
 
       for (const agent of activeAgents) {
         try {
-          // Add a small delay to avoid hitting OSRM rate limits
           await new Promise(r => setTimeout(r, 200)) 
           const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${agent.lng},${agent.lat};${agent.targetLng},${agent.targetLat}?overview=full&geometries=geojson`)
           const data = await res.json()
           if (data.routes && data.routes[0]) {
             const coords = data.routes[0].geometry.coordinates.map((c: any) => [c[1], c[0]])
-            allRoutesRef.current[agent.id] = coords
+            agentStateRef.current[agent.id] = {
+              route: coords,
+              targetIndex: 1, // Start moving towards index 1
+              direction: 1,   // 1 = forward, -1 = backward
+              idleTicks: 0
+            }
           }
         } catch (e) {
           console.error(`Error fetching route for ${agent.id}:`, e)
@@ -107,47 +136,72 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
     fetchAllRoutes()
   }, [])
 
-  // Live GPS Simulation Interval (Continuous Movement for ALL active agents)
+  // Smooth Simulation Interval (Runs every 1 second)
   useEffect(() => {
     const interval = setInterval(() => {
       
-      // Move Trucks
-      setLiveVehicles(prev => prev.map(v => {
-        const route = allRoutesRef.current[v.id]
-        if (route && route.length > 0) {
-          // Jump ahead 1-2 points to simulate a slower, realistic GPS location ping
-          const jumpAmount = Math.min(Math.floor(Math.random() * 2) + 1, route.length);
-          const newPos = route[jumpAmount - 1];
-          // Shrink the route line as we consume points
-          allRoutesRef.current[v.id] = route.slice(jumpAmount);
-          return { ...v, lat: newPos[0], lng: newPos[1] };
-        } else {
-          // Idle drift
-          const jitterLat = (Math.random() - 0.5) * 0.00005;
-          const jitterLng = (Math.random() - 0.5) * 0.00005;
-          return { ...v, lat: v.lat + jitterLat, lng: v.lng + jitterLng };
+      const simulateAgentMove = (agent: any, isSweeper: boolean) => {
+        const state = agentStateRef.current[agent.id]
+        
+        // If agent has no route, just drift slightly
+        if (!state || !state.route || state.route.length === 0) {
+          return {
+            ...agent,
+            lat: agent.lat + (Math.random() - 0.5) * 0.00002,
+            lng: agent.lng + (Math.random() - 0.5) * 0.00002
+          }
         }
-      }))
 
-      // Move Sweepers
-      setLiveSweepers(prev => prev.map(s => {
-        const route = allRoutesRef.current[s.id]
-        if (route && route.length > 0) {
-          // Sweepers are walking, so they move slower (jump 1 point maximum)
-          const jumpAmount = 1;
-          const newPos = route[jumpAmount - 1];
-          allRoutesRef.current[s.id] = route.slice(jumpAmount);
-          return { ...s, lat: newPos[0], lng: newPos[1] };
-        } else {
-          // Idle drift
-          const jitterLat = (Math.random() - 0.5) * 0.00005;
-          const jitterLng = (Math.random() - 0.5) * 0.00005;
-          return { ...s, lat: s.lat + jitterLat, lng: s.lng + jitterLng };
+        // If agent is currently clearing trash or at depot (idle)
+        if (state.idleTicks > 0) {
+          state.idleTicks -= 1;
+          // Jitter slightly while working/idle
+          return {
+            ...agent,
+            lat: agent.lat + (Math.random() - 0.5) * 0.00002,
+            lng: agent.lng + (Math.random() - 0.5) * 0.00002,
+            status: state.targetIndex >= state.route.length - 1 && state.direction === 1 ? 'Clearing Waste' : 'At Depot'
+          }
         }
-      }))
+
+        // Agent is moving
+        const targetPoint = state.route[state.targetIndex];
+        // Trucks move ~15m per tick, Sweepers move ~3m per tick
+        const speed = isSweeper ? 0.00003 : 0.00015; 
+        
+        const moveRes = moveTowards(agent.lat, agent.lng, targetPoint[0], targetPoint[1], speed);
+
+        // If they reached the current sub-waypoint
+        if (moveRes.arrived) {
+          state.targetIndex += state.direction;
+
+          // Reached the very end of the route (Trash spot)
+          if (state.targetIndex >= state.route.length) {
+            state.direction = -1; // Turn around
+            state.targetIndex = state.route.length - 2;
+            state.idleTicks = 8; // Spend 8 seconds clearing the trash
+          } 
+          // Reached the very beginning of the route (Depot)
+          else if (state.targetIndex < 0) {
+            state.direction = 1; // Turn around
+            state.targetIndex = 1;
+            state.idleTicks = 8; // Spend 8 seconds unloading at depot
+          }
+        }
+
+        return {
+          ...agent,
+          lat: moveRes.lat,
+          lng: moveRes.lng,
+          status: 'On route'
+        }
+      }
+
+      setLiveVehicles(prev => prev.map(v => simulateAgentMove(v, false)))
+      setLiveSweepers(prev => prev.map(s => simulateAgentMove(s, true)))
       
       setTriggerRender(prev => prev + 1) // Force update to redraw selected path
-    }, 2000);
+    }, 1000); // 1 second interval for ultra-smooth movement
 
     return () => clearInterval(interval);
   }, [])
@@ -155,7 +209,19 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
   if (!mounted) return <div style={{ height, width: '100%', background: '#1e293b', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</div>
 
   const center: [number, number] = [28.4728, 77.5028]
-  const selectedPath = selectedAgentId ? allRoutesRef.current[selectedAgentId] : []
+  
+  // Calculate the remaining path line to draw for the selected agent
+  let selectedPath: [number, number][] = [];
+  if (selectedAgentId && agentStateRef.current[selectedAgentId]) {
+    const state = agentStateRef.current[selectedAgentId];
+    if (state.direction === 1) {
+      // Moving forward: show path from targetIndex to the end
+      selectedPath = state.route.slice(state.targetIndex);
+    } else {
+      // Moving backward: show path from targetIndex to the start
+      selectedPath = state.route.slice(0, state.targetIndex + 1).reverse();
+    }
+  }
 
   return (
     <div style={{ height, width: '100%', borderRadius: '12px', overflow: 'hidden' }}>
@@ -166,7 +232,7 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
         
-        {/* Only draw path if an agent is selected and has remaining route */}
+        {/* Draw remaining path line */}
         {selectedPath && selectedPath.length > 0 && (
           <Polyline positions={selectedPath} color="#10b981" weight={5} opacity={0.8} />
         )}
@@ -194,7 +260,7 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
             <Popup>
               <strong>{s.name}</strong> ({s.id})<br/>
               Role: Street Sweeper<br/>
-              Status: {s.status}
+              Status: <span className={s.status === 'Clearing Waste' ? 'text-emerald-500 font-bold' : ''}>{s.status}</span>
             </Popup>
           </Marker>
         ))}
@@ -211,7 +277,7 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
           >
             <Popup>
               <strong>{v.id}</strong> ({v.type})<br/>
-              Status: {v.status}<br/>
+              Status: <span className={v.status === 'Clearing Waste' ? 'text-emerald-500 font-bold' : ''}>{v.status}</span><br/>
               Fuel: {v.fuel}<br/>
               Driver: {v.driver}
             </Popup>
