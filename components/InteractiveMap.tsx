@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { vehicles as initialVehicles, wasteBins, sweepers as initialSweepers, depots } from '../lib/mockData'
 import L from 'leaflet'
@@ -92,6 +92,7 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
   // Live states
   const [liveVehicles, setLiveVehicles] = useState(initialVehicles)
   const [liveSweepers, setLiveSweepers] = useState(initialSweepers)
+  const [liveDetections, setLiveDetections] = useState<any[]>([])
   const [triggerRender, setTriggerRender] = useState(0) 
   
   // Advanced Simulation State
@@ -255,7 +256,23 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
       setTriggerRender(prev => prev + 1) // Force update to redraw selected path
     }, 1000); // 1 second interval for ultra-smooth movement
 
-    return () => clearInterval(interval);
+    // Polling for Live Telemetry from Debug Page
+    const telemetryInterval = setInterval(() => {
+      try {
+        const stored = localStorage.getItem('recentDetections')
+        if (stored) {
+          const parsed = JSON.parse(stored)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setLiveDetections(parsed)
+          }
+        }
+      } catch(e) {}
+    }, 2000)
+
+    return () => {
+      clearInterval(interval)
+      clearInterval(telemetryInterval)
+    }
   }, [])
 
   if (!mounted) return <div style={{ height, width: '100%', background: '#1e293b', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</div>
@@ -364,6 +381,39 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
               Status: {bin.status}
             </Popup>
           </Marker>
+        ))}
+
+        {/* Render Live AI Detections (Pulsing Red Dots) */}
+        {liveDetections.map((detection) => (
+          <CircleMarker 
+            key={detection.id} 
+            center={[detection.lat, detection.lng]}
+            radius={8}
+            pathOptions={{ 
+              color: '#ef4444', 
+              fillColor: '#ef4444', 
+              fillOpacity: 0.6,
+              weight: 2,
+              className: 'animate-ping' // Tailwind pulse effect on SVG
+            }}
+          >
+            <Popup className="custom-popup">
+              <div className="font-sans text-sm min-w-[200px]">
+                <div className="font-bold border-b border-slate-200 pb-1 mb-2 text-red-600">
+                  ⚠️ Live AI Detection
+                </div>
+                <div className="grid grid-cols-2 gap-1 mb-2">
+                  <span className="text-slate-500 font-semibold">Severity:</span>
+                  <span className="text-right font-bold text-red-500">{detection.severity_score}%</span>
+                  <span className="text-slate-500 font-semibold">Vol:</span>
+                  <span className="text-right">{detection.volume_estimate || 'Unknown'}</span>
+                </div>
+                <div className="text-xs text-slate-600 bg-slate-100 p-2 rounded">
+                  {detection.analysis_summary}
+                </div>
+              </div>
+            </Popup>
+          </CircleMarker>
         ))}
       </MapContainer>
     </div>
