@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { Bell, ChevronRight, Leaf, Moon, X } from 'lucide-react'
 
 const breadcrumbs: Record<string, string> = {
@@ -15,20 +16,16 @@ const breadcrumbs: Record<string, string> = {
 export function Topbar() {
   const pathname = usePathname()
   const activeNav = breadcrumbs[pathname] || 'Overview'
-  const [isDark, setIsDark] = useState(true)
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [notifications, setNotifications] = useState(false)
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'))
+    setMounted(true)
   }, [])
 
   function toggleTheme() {
-    setIsDark((current) => {
-      const newDark = !current
-      document.documentElement.classList.toggle('light', !newDark)
-      document.documentElement.classList.toggle('dark', newDark)
-      return newDark
-    })
+    setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
   return (

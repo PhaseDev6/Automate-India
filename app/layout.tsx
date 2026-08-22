@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 import { LayoutShell } from '../components/LayoutShell'
+import { ThemeProvider } from 'next-themes'
 
 export const metadata: Metadata = {
   title: 'UrbanSweep — Municipal Operations',
@@ -41,11 +42,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        <LayoutShell>
-          {children}
-        </LayoutShell>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <LayoutShell>
+            {children}
+          </LayoutShell>
+        </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
