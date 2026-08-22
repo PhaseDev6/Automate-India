@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     };
 
     // Use Gemini 1.5 Flash - it is extremely fast and great for vision tasks
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     // Strict prompt to force JSON format based on user request
     const prompt = `
