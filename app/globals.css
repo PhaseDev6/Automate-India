@@ -37,7 +37,7 @@ body { margin: 0; background: var(--background); color: var(--foreground); font-
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 .app-shell { min-height: 100vh; display: flex; background: radial-gradient(circle at 76% 0%, rgba(58, 127, 94, .09), transparent 31rem), var(--background); }
-.sidebar { width: 224px; flex: 0 0 224px; min-height: 100vh; border-right: 1px solid var(--border); padding: 25px 13px 16px; display: flex; flex-direction: column; background: rgba(14, 23, 20, .72); }
+.sidebar { width: 224px; flex: 0 0 224px; height: 100vh; position: sticky; top: 0; border-right: 1px solid var(--border); padding: 25px 13px 16px; display: flex; flex-direction: column; background: rgba(14, 23, 20, .72); }
 .light .sidebar { background: rgba(255,255,255,.65); }
 .brand, .mobile-brand { display: flex; align-items: center; gap: 9px; color: var(--foreground); font-weight: 700; font-size: 19px; letter-spacing: -.04em; padding-left: 10px; }
 .brand-mark { display: grid; place-items: center; width: 27px; height: 27px; color: #07100d; border-radius: 8px; background: var(--primary); }
