@@ -105,7 +105,6 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
   }>({})
 
   // CVRP RL Engine State
-  const [engineUrl, setEngineUrl] = useState('http://localhost:8000')
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [optError, setOptError] = useState<string|null>(null)
 
@@ -120,7 +119,11 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
         hotspots: wasteBins.filter(b => b.fillLevel > 50).map(b => ({ id: b.id, lat: b.lat, lng: b.lng, demand: b.fillLevel }))
       }
 
-      const res = await fetch(`${engineUrl}/optimize-routes`, {
+      // Check for external engine in settings, default to internal Next.js API
+      const externalUrl = localStorage.getItem('externalEngineUrl')
+      const targetUrl = externalUrl ? `${externalUrl}/optimize-routes` : '/api/optimize-routes'
+
+      const res = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -275,30 +278,22 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
   return (
     <div style={{ height, width: '100%', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
       
-      {/* CVRP RL Control Panel Overlay */}
-      <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000, background: 'rgba(15, 23, 42, 0.9)', padding: '16px', borderRadius: '12px', border: '1px solid #334155', backdropFilter: 'blur(4px)', width: '320px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
-        <h3 className="text-emerald-400 font-bold mb-2 flex items-center gap-2"><Zap size={16}/> RL Fleet Optimizer</h3>
-        <p className="text-xs text-slate-400 mb-4">Connects to Colab CVRP Engine (OR-Tools) to dynamically reroute all active trucks to critical hotspots.</p>
-        <div className="flex flex-col gap-2 mb-4">
-          <label className="text-xs font-semibold text-slate-300">Engine API URL (Ngrok)</label>
-          <input 
-            type="text" 
-            value={engineUrl}
-            onChange={e => setEngineUrl(e.target.value)}
-            className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-white w-full outline-none focus:border-emerald-500"
-            placeholder="http://localhost:8000"
-          />
-        </div>
+      {/* Clean Floating Action Button for Optimization */}
+      <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}>
         <button 
           onClick={triggerOptimization}
           disabled={isOptimizing}
-          className={`w-full py-2 rounded-lg font-bold text-sm flex justify-center items-center gap-2 transition-all ${
-            isOptimizing ? 'bg-emerald-600/50 cursor-not-allowed text-white/50' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.3)]'
+          className={`px-4 py-3 rounded-full font-bold text-sm flex justify-center items-center gap-2 transition-all shadow-lg backdrop-blur-md ${
+            isOptimizing ? 'bg-slate-800/80 cursor-not-allowed text-emerald-500 animate-pulse' : 'bg-slate-900/90 border border-slate-700 hover:bg-emerald-600 hover:border-emerald-500 text-white hover:shadow-[0_0_15px_rgba(16,185,129,0.5)]'
           }`}
         >
-          {isOptimizing ? 'Calculating Routes...' : '⚡ Re-Optimize Fleet'}
+          {isOptimizing ? (
+            <><div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"/> Calculating Routes...</>
+          ) : (
+            <><Zap size={16} className="text-emerald-400" /> Optimize Fleet Routes</>
+          )}
         </button>
-        {optError && <div className="mt-3 text-xs text-red-400 bg-red-900/20 p-2 rounded border border-red-500/30">{optError}</div>}
+        {optError && <div className="absolute top-full mt-2 right-0 whitespace-nowrap text-xs text-red-400 bg-red-900/90 backdrop-blur-md px-3 py-2 rounded-lg border border-red-500/30 shadow-lg">{optError}</div>}
       </div>
 
       <MapContainer center={center} zoom={14} style={{ height: '100%', width: '100%', zIndex: 0 }} onClick={() => setSelectedAgentId(null)}>

@@ -22,6 +22,7 @@ const navItems = [
   { label: 'Live Map', href: '/map', icon: Map },
   { label: 'Vehicles', href: '/vehicles', icon: Truck },
   { label: 'Team', href: '/team', icon: UserRound },
+  { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export function Sidebar() {
@@ -41,7 +42,7 @@ export function Sidebar() {
           </Link>
         ))}
         <span className="nav-label nav-label-spaced">Workspace</span>
-        <button className="nav-item"><Settings size={17} /><span>Settings</span></button>
+        <Link href="/settings" className="nav-item"><Settings size={17} /><span>Settings</span></Link>
       </nav>
       <div className="sidebar-bottom"><div className="help-card"><CircleHelp size={17} /><div><strong>Need a hand?</strong><span>Open help center</span></div><ChevronRight size={15} /></div><div className="user-card"><div className="user-avatar">RS</div><div><strong>Rohan Sharma</strong><span>Administrator</span></div><MoreHorizontal size={17} /></div></div>
     </aside>
