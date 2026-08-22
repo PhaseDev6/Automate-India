@@ -44,17 +44,27 @@ const createDepotIcon = () => {
   })
 }
 
-const createBinIcon = (fillLevel: number) => {
+const createBinIcon = (fillLevel: number, source?: string) => {
   const intensity = fillLevel / 100;
   const borderWidth = Math.max(1, intensity * 4);
   const shadowSpread = Math.max(5, intensity * 25);
   const borderColor = `rgba(239, 68, 68, ${Math.max(0.4, intensity)})`;
   const iconColor = fillLevel >= 80 ? '#ef4444' : '#94a3b8';
 
+  let svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`;
+  
+  if (source?.includes('CCTV')) {
+    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>`; // Camera
+  } else if (source?.includes('Satellite')) {
+    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M2 12h20"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0"/></svg>`; // Satellite/Globe
+  } else if (source?.includes('Citizen') || source?.includes('Dashcam')) {
+    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`; // Phone
+  }
+
   return L.divIcon({
     className: 'custom-bin-icon',
     html: `<div style="background: #0f172a; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: ${borderWidth}px solid ${borderColor}; box-shadow: 0 0 ${shadowSpread}px rgba(239, 68, 68, ${intensity}); z-index: ${fillLevel};">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+      ${svgIcon}
     </div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 16],
@@ -91,6 +101,7 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
   // Live states
   const [liveVehicles, setLiveVehicles] = useState(initialVehicles)
   const [liveSweepers, setLiveSweepers] = useState(initialSweepers)
+  const [liveSpots, setLiveSpots] = useState<any[]>([])
   const [triggerRender, setTriggerRender] = useState(0) 
   
   // Advanced Simulation State
@@ -203,7 +214,27 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
       setTriggerRender(prev => prev + 1) // Force update to redraw selected path
     }, 1000); // 1 second interval for ultra-smooth movement
 
-    return () => clearInterval(interval);
+    // Polling interval for live AI detections (to support both same-tab and cross-tab sync)
+    const spotsInterval = setInterval(() => {
+      const stored = localStorage.getItem('live_detected_spots');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          // Only update if there's a difference to prevent unnecessary re-renders
+          setLiveSpots(prev => {
+            if (prev.length !== parsed.length) return parsed;
+            return prev;
+          });
+        } catch (e) {}
+      } else {
+        setLiveSpots([]);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(spotsInterval);
+    }
   }, [])
 
   if (!mounted) return <div style={{ height, width: '100%', background: '#1e293b', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</div>
@@ -286,11 +317,60 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
 
         {/* Render Waste Bins */}
         {wasteBins.map((bin) => (
-          <Marker key={bin.id} position={[bin.lat, bin.lng]} icon={createBinIcon(bin.fillLevel)}>
+          <Marker key={bin.id} position={[bin.lat, bin.lng]} icon={createBinIcon(bin.fillLevel, bin.source)}>
             <Popup>
-              <strong>{bin.id}</strong><br/>
-              Severity/Fill: {bin.fillLevel}%<br/>
-              Status: {bin.status}
+              <div className="flex flex-col gap-1 min-w-[200px]">
+                <strong className="text-lg border-b pb-1">{bin.id} Hotspot</strong>
+                <div className="flex justify-between mt-1">
+                  <span className="text-gray-500">Source:</span>
+                  <span className="font-semibold text-blue-600">{bin.source}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">GNN Vol Est:</span>
+                  <span className="font-semibold text-amber-600">{bin.volumeEst}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Status:</span>
+                  <span className={bin.status === 'Full' ? 'text-red-600 font-bold' : ''}>{bin.status}</span>
+                </div>
+                {bin.fillLevel > 70 && (
+                  <button 
+                    onClick={() => {
+                      alert('RL Engine triggered: Rerouting nearest available truck (TRK-018) to this high-priority hotspot. Estimated arrival: 4 mins.');
+                    }}
+                    className="mt-2 bg-emerald-600 text-white py-1 px-2 rounded font-bold hover:bg-emerald-500 transition-colors"
+                  >
+                    ⚡ Force RL Reroute Here
+                  </button>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Render Live AI Detections (Pulsing Red Dots) */}
+        {liveSpots.map((spot) => (
+          <Marker 
+            key={spot.id} 
+            position={[spot.lat, spot.lng]}
+            icon={L.divIcon({
+              className: 'custom-live-spot',
+              html: `<div style="width: 16px; height: 16px; background-color: #ef4444; border-radius: 50%; box-shadow: 0 0 0 0 rgba(239, 68, 68, 1); animation: pulse-red 2s infinite;"></div>
+              <style>
+                @keyframes pulse-red {
+                  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+                  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+                  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+                }
+              </style>`,
+              iconSize: [16, 16],
+              iconAnchor: [8, 8]
+            })}
+          >
+            <Popup>
+              <strong>Live AI Detection</strong><br/>
+              Severity: {spot.severity}%<br/>
+              Action: {spot.dispatch ? 'Dispatch Required' : 'Monitoring'}
             </Popup>
           </Marker>
         ))}

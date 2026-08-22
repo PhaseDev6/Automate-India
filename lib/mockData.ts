@@ -19,8 +19,11 @@ export const depots = [
 
 export const wasteBins = [
   { id: 'BIN-101', lat: 28.4730, lng: 77.5020, fillLevel: 95, status: 'Full', source: 'CCTV Camera 4A', volumeEst: '3.2 cubic meters' },
-  { id: 'BIN-102', lat: 28.4740, lng: 77.5010, fillLevel: 45, status: 'Normal', source: 'Satellite Imagery', volumeEst: '1.1 cubic meters' },
-  { id: 'BIN-103', lat: 28.4710, lng: 77.5035, fillLevel: 10, status: 'Empty', source: 'Public Transit Dashcam', volumeEst: '0.2 cubic meters' },
-  { id: 'BIN-104', lat: 28.4725, lng: 77.5050, fillLevel: 80, status: 'Warning', source: 'Citizen App Report', volumeEst: '2.5 cubic meters' },
-  { id: 'BIN-105', lat: 28.4750, lng: 77.5000, fillLevel: 100, status: 'Full', source: 'CCTV Camera 2B', volumeEst: '4.0 cubic meters (Overflow)' },
+  { id: 'BIN-102', lat: 28.4850, lng: 77.4910, fillLevel: 45, status: 'Normal', source: 'Satellite Imagery', volumeEst: '1.1 cubic meters' },
+  { id: 'BIN-103', lat: 28.4610, lng: 77.5135, fillLevel: 10, status: 'Empty', source: 'Public Transit Dashcam', volumeEst: '0.2 cubic meters' },
+  { id: 'BIN-104', lat: 28.4925, lng: 77.5050, fillLevel: 80, status: 'Warning', source: 'Citizen App Report', volumeEst: '2.5 cubic meters' },
+  { id: 'BIN-105', lat: 28.4680, lng: 77.4850, fillLevel: 100, status: 'Full', source: 'CCTV Camera 2B', volumeEst: '4.0 cubic meters (Overflow)' },
+  { id: 'BIN-106', lat: 28.4810, lng: 77.5210, fillLevel: 65, status: 'Normal', source: 'Traffic Cam 9', volumeEst: '2.0 cubic meters' },
+  { id: 'BIN-107', lat: 28.4550, lng: 77.4980, fillLevel: 90, status: 'Full', source: 'Citizen App Report', volumeEst: '3.0 cubic meters' },
+  { id: 'BIN-108', lat: 28.4790, lng: 77.4820, fillLevel: 75, status: 'Warning', source: 'Satellite Imagery', volumeEst: '2.2 cubic meters' },
 ]
