@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { Server, FolderUp, Activity, Cpu } from 'lucide-react'
 
 export default function DebugPage() {
   const [imageFiles, setImageFiles] = useState<File[]>([])
@@ -80,8 +81,8 @@ export default function DebugPage() {
   return (
     <div className="p-8 max-w-7xl mx-auto text-white h-[90vh] flex flex-col">
       <div className="mb-6 border-b border-slate-700 pb-4 shrink-0">
-        <h1 className="text-3xl font-bold mb-2 flex items-center">
-          <span className="text-emerald-400 mr-3">✨</span> 
+        <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+          <Server className="text-emerald-400" size={32} /> 
           Batch AI Vision Telemetry
         </h1>
         <p className="text-slate-400">
@@ -100,7 +101,7 @@ export default function DebugPage() {
             className="flex-1 border-2 border-dashed border-slate-600 rounded-lg flex flex-col items-center justify-center bg-slate-900 cursor-pointer hover:border-emerald-500 transition-colors p-6 text-center mb-4"
             onClick={() => fileInputRef.current?.click()}
           >
-            <div className="text-4xl mb-3">📁</div>
+            <FolderUp size={48} className="text-slate-400 mb-4" />
             <p className="text-slate-300 font-semibold mb-1">Upload Image Folder</p>
             <p className="text-slate-500 text-sm">Select a directory containing test images</p>
             
@@ -128,7 +129,7 @@ export default function DebugPage() {
           <button 
             onClick={runBatchInference}
             disabled={isProcessing || imageFiles.length === 0}
-            className={`w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center gap-2 transition-all shadow-lg ${
+            className={`w-full py-4 rounded-xl font-bold text-lg flex justify-center items-center gap-3 transition-all shadow-lg ${
               isProcessing ? 'bg-slate-700 cursor-not-allowed text-emerald-400' : 
               imageFiles.length === 0 ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 
               'bg-emerald-600 hover:bg-emerald-500 text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.5)]'
@@ -137,7 +138,7 @@ export default function DebugPage() {
             {isProcessing ? (
               <><div className="w-5 h-5 border-2 border-emerald-400/30 border-t-emerald-400 rounded-full animate-spin" /> Analyzing Stream...</>
             ) : (
-              '🚀 Start Batch Inference'
+              <><Cpu size={24} /> Start Batch Inference</>
             )}
           </button>
         </div>

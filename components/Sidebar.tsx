@@ -41,8 +41,6 @@ export function Sidebar() {
             {label === 'Vehicles' && <span className="nav-count">24</span>}
           </Link>
         ))}
-        <span className="nav-label nav-label-spaced">Workspace</span>
-        <Link href="/settings" className="nav-item"><Settings size={17} /><span>Settings</span></Link>
       </nav>
       <div className="sidebar-bottom"><div className="help-card"><CircleHelp size={17} /><div><strong>Need a hand?</strong><span>Open help center</span></div><ChevronRight size={15} /></div><div className="user-card"><div className="user-avatar">RS</div><div><strong>Rohan Sharma</strong><span>Administrator</span></div><MoreHorizontal size={17} /></div></div>
     </aside>

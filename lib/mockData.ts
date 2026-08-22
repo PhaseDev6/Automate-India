@@ -1,12 +1,12 @@
 export const vehicles = [
-  { id: 'TRK-042', type: 'Compactor', route: 'Alpha 1 - Block A', status: 'On route', fuel: '78%', driver: 'Maya Chen', updated: '2 min ago', lat: 28.4735, lng: 77.5015, startLat: 28.4710, startLng: 77.4980, targetLat: 28.4750, targetLng: 77.5000 },
-  { id: 'TRK-018', type: 'Roll-off', route: 'Commercial Belt', status: 'On route', fuel: '64%', driver: 'Jordan Smith', updated: '5 min ago', lat: 28.4905, lng: 77.4940, startLat: 28.4900, startLng: 77.4900, targetLat: 28.4910, targetLng: 77.4960 },
-  { id: 'TRK-031', type: 'Rear loader', route: 'C Market', status: 'At depot', fuel: '92%', driver: 'Avery Johnson', updated: '8 min ago', lat: 28.4705, lng: 77.5005, startLat: 28.4705, startLng: 77.5005, targetLat: 28.4705, targetLng: 77.5005 },
+  { id: 'TRK-042', type: 'Compactor', route: 'Alpha 1 - Block A', status: 'On route', fuel: '78%', driver: 'Rajesh Kumar', updated: '2 min ago', lat: 28.4735, lng: 77.5015, startLat: 28.4710, startLng: 77.4980, targetLat: 28.4750, targetLng: 77.5000 },
+  { id: 'TRK-018', type: 'Roll-off', route: 'Commercial Belt', status: 'On route', fuel: '64%', driver: 'Amit Patel', updated: '5 min ago', lat: 28.4905, lng: 77.4940, startLat: 28.4900, startLng: 77.4900, targetLat: 28.4910, targetLng: 77.4960 },
+  { id: 'TRK-031', type: 'Rear loader', route: 'C Market', status: 'At depot', fuel: '92%', driver: 'Sandeep Singh', updated: '8 min ago', lat: 28.4705, lng: 77.5005, startLat: 28.4705, startLng: 77.5005, targetLat: 28.4705, targetLng: 77.5005 },
   { id: 'TRK-027', type: 'Compactor', route: 'Golf Course Area', status: 'Maintenance', fuel: '31%', driver: '—', updated: '18 min ago', lat: 28.4650, lng: 77.5070, startLat: 28.4650, startLng: 77.5070, targetLat: 28.4650, targetLng: 77.5070 },
-  { id: 'TRK-006', type: 'Sweeper', route: 'Knowledge Park', status: 'On route', fuel: '55%', driver: 'Noah Williams', updated: '22 min ago', lat: 28.4620, lng: 77.5250, startLat: 28.4600, startLng: 77.5210, targetLat: 28.4640, targetLng: 77.5270 },
-  { id: 'TRK-055', type: 'Compactor', route: 'Tech Zone', status: 'On route', fuel: '88%', driver: 'Raj Patel', updated: '1 min ago', lat: 28.4850, lng: 77.4800, startLat: 28.4800, startLng: 77.4800, targetLat: 28.4880, targetLng: 77.4820 },
-  { id: 'TRK-012', type: 'Roll-off', route: 'Eco Village', status: 'On route', fuel: '45%', driver: 'Priya Sharma', updated: '12 min ago', lat: 28.4550, lng: 77.4950, startLat: 28.4500, startLng: 77.4900, targetLat: 28.4580, targetLng: 77.4990 },
-  { id: 'TRK-088', type: 'Rear loader', route: 'Omega Sector', status: 'On route', fuel: '72%', driver: 'Arjun Singh', updated: '4 min ago', lat: 28.4420, lng: 77.5150, startLat: 28.4400, startLng: 77.5100, targetLat: 28.4450, targetLng: 77.5180 },
+  { id: 'TRK-006', type: 'Sweeper', route: 'Knowledge Park', status: 'On route', fuel: '55%', driver: 'Anil Yadav', updated: '22 min ago', lat: 28.4620, lng: 77.5250, startLat: 28.4600, startLng: 77.5210, targetLat: 28.4640, targetLng: 77.5270 },
+  { id: 'TRK-055', type: 'Compactor', route: 'Tech Zone', status: 'On route', fuel: '88%', driver: 'Manoj Sharma', updated: '1 min ago', lat: 28.4850, lng: 77.4800, startLat: 28.4800, startLng: 77.4800, targetLat: 28.4880, targetLng: 77.4820 },
+  { id: 'TRK-012', type: 'Roll-off', route: 'Eco Village', status: 'On route', fuel: '45%', driver: 'Sunil Gupta', updated: '12 min ago', lat: 28.4550, lng: 77.4950, startLat: 28.4500, startLng: 77.4900, targetLat: 28.4580, targetLng: 77.4990 },
+  { id: 'TRK-088', type: 'Rear loader', route: 'Omega Sector', status: 'On route', fuel: '72%', driver: 'Vikash Verma', updated: '4 min ago', lat: 28.4420, lng: 77.5150, startLat: 28.4400, startLng: 77.5100, targetLat: 28.4450, targetLng: 77.5180 },
 ]
 
 export const sweepers = [
