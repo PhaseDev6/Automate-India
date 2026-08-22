@@ -22,7 +22,6 @@ const navItems = [
   { label: 'Live Map', href: '/map', icon: Map },
   { label: 'Vehicles', href: '/vehicles', icon: Truck },
   { label: 'Team', href: '/team', icon: UserRound },
-  { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export function Sidebar() {
