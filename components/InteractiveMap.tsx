@@ -279,16 +279,20 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
 
   const center: [number, number] = [28.4728, 77.5028]
   
-  // Calculate the remaining path line to draw for the selected agent
-  let selectedPath: [number, number][] = [];
+  // Calculate the traveled and remaining path lines to draw for the selected agent
+  let traveledPath: [number, number][] = [];
+  let remainingPath: [number, number][] = [];
+  
   if (selectedAgentId && agentStateRef.current[selectedAgentId]) {
     const state = agentStateRef.current[selectedAgentId];
     if (state.direction === 1) {
-      // Moving forward: show path from targetIndex to the end
-      selectedPath = state.route.slice(state.targetIndex);
+      // Moving forward
+      traveledPath = state.route.slice(0, state.targetIndex + 1);
+      remainingPath = state.route.slice(state.targetIndex);
     } else {
-      // Moving backward: show path from targetIndex to the start
-      selectedPath = state.route.slice(0, state.targetIndex + 1).reverse();
+      // Moving backward
+      traveledPath = state.route.slice(state.targetIndex, state.route.length).reverse();
+      remainingPath = state.route.slice(0, state.targetIndex + 1).reverse();
     }
   }
 
@@ -320,9 +324,14 @@ export default function InteractiveMap({ height = '400px' }: { height?: string }
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
         
-        {/* Draw remaining path line */}
-        {selectedPath && selectedPath.length > 0 && (
-          <Polyline positions={selectedPath} color="#10b981" weight={5} opacity={0.8} />
+        {/* Draw traveled path line (Faded gray, dashed) */}
+        {traveledPath && traveledPath.length > 0 && (
+          <Polyline positions={traveledPath} color="#64748b" weight={4} opacity={0.5} dashArray="5, 10" />
+        )}
+        
+        {/* Draw remaining path line (Bright emerald, solid) */}
+        {remainingPath && remainingPath.length > 0 && (
+          <Polyline positions={remainingPath} color="#10b981" weight={5} opacity={0.9} />
         )}
 
         {/* Render Depots */}
